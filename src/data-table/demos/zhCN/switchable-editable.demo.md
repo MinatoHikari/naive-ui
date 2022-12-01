@@ -4,38 +4,43 @@
 
 ```html
 <n-data-table
-  :key="(row) => row.key"
+  :key="(row) => row.innerKey"
   :columns="columns"
   :data="data"
-  :pagination="pagination"
+  virtual-scroll
+  :pagination="false"
+  max-height="500"
 />
-<pre>{{ JSON.stringify(data, null, 2) }}</pre>
 ```
 
 ```js
 import { h, defineComponent, ref, nextTick } from 'vue'
 import { NInput } from 'naive-ui'
 
-const createData = () => [
-  {
-    key: 0,
-    name: 'John Brown',
-    age: '32',
-    address: 'New York No. 1 Lake Park'
-  },
-  {
-    key: 1,
-    name: 'Jim Green',
-    age: '42',
-    address: 'London No. 1 Lake Park'
-  },
-  {
-    key: 2,
-    name: 'Joe Black',
-    age: '32',
-    address: 'Sidney No. 1 Lake Park'
+let key = 0
+
+const tableUtils = {
+  insert: (tableData, insertData) => {
+    insertData.key = key
+    key = key + 1
+    tableData.push(insertData)
   }
-]
+}
+
+const dataSample = {
+  name: 'John Brown',
+  age: '32',
+  address: 'New York No. 1 Lake Park'
+}
+
+const createData = () => {
+  const tableData = []
+  for (let i = 0; i < 100; i++) {
+    tableUtils.insert(tableData, { ...dataSample })
+  }
+
+  return tableData
+}
 
 const ShowOrEdit = defineComponent({
   props: {
